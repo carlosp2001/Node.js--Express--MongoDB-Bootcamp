@@ -1,6 +1,10 @@
 // Usando Modulos 1: Core Modules
 
 const fs = require('fs');
+const http = require('http');
+
+//////////////////////////////////////////////////////////////////////////////
+// ARCHIVOS
 
 // const hello = 'Hello world';
 // console.log(hello);
@@ -53,3 +57,17 @@ fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
 });
 
 console.log('Will read file!');
+
+//////////////////////////////////////////////////////////////////////////////
+// SERVER
+
+//////////////////////////////////////////////////////////////////////////////
+// Creando un servidor web simple
+
+const server = http.createServer((req, res) => {
+    res.end('Hello from the server');
+});
+
+server.listen(8000, '127.0.0.1', () => {
+    console.log('Listening to requests on port 8000');
+})
