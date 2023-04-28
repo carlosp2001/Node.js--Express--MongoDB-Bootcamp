@@ -89,7 +89,7 @@ const server = http.createServer((req, res) => {
         //     });
         //     res.end(data);
         // });
-        
+
         res.writeHead(200, {
             'Content-type': 'application/json',
         });
@@ -111,3 +111,7 @@ server.listen(8000, '127.0.0.1', () => {
 
 //////////////////////////////////////////////////////////////////////////////
 // Routing
+
+//////////////////////////////////////////////////////////////////////////////
+// HTML Templating: Construyendo los formatos
+
