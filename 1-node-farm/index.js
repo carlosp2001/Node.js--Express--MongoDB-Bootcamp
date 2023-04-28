@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const http = require('http');
+const url = require('url');
 
 //////////////////////////////////////////////////////////////////////////////
 // ARCHIVOS
@@ -65,9 +66,28 @@ console.log('Will read file!');
 // Creando un servidor web simple
 
 const server = http.createServer((req, res) => {
-    res.end('Hello from the server');
+    console.log(req.url);
+
+    const pathName = req.url;
+    if(pathName === '/' || pathName === '/overview') {
+        res.end('This is the overview');
+    } else if(pathName === '/product') {
+        res.end('This is the product');
+    } else {
+        // De esta forma enviamos encabezados HTTP
+        // Un encabezado HTTP es basicamente una información sobre la respuesta que estamos enviando
+        res.writeHead(404, {
+            'Content-type' : 'text/html',
+            'my-own-header' : 'hello-world'
+        });
+        res.end('Page not found!')
+    }
 });
 
 server.listen(8000, '127.0.0.1', () => {
     console.log('Listening to requests on port 8000');
 })
+
+//////////////////////////////////////////////////////////////////////////////
+// Routing
+
