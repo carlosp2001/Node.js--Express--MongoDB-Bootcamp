@@ -101,10 +101,12 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-    console.log(req.url);
+    // console.log(req.url);
+    // console.log(url.parse(req.url, true));
 
-    const pathName = req.url;
-
+    // const pathName = req.url;
+    const {query, pathname: pathName} = url.parse(req.url, true)
+    // console.log(pathName);
     // Overview page
     if (pathName === '/' || pathName === '/overview') {
         res.writeHead(200, {
@@ -119,7 +121,13 @@ const server = http.createServer((req, res) => {
 
         // Product page
     } else if (pathName === '/product') {
-        res.end('This is the product');
+        console.log(query);
+        const product = dataObj[query.id];
+        res.writeHead(200, {
+            'Content-type': 'text/html',
+        });
+        const output = replaceTemplate(tempProduct, product);
+        res.end(output);
 
         // API
     } else if (pathName === '/api') {
@@ -161,3 +169,7 @@ server.listen(8000, '127.0.0.1', () => {
 
 //////////////////////////////////////////////////////////////////////////////
 // HTML Templating: Llenando los formatos
+
+//////////////////////////////////////////////////////////////////////////////
+// Obteniendo variables desde la url
+
