@@ -183,3 +183,26 @@ server.listen(8000, '127.0.0.1', () => {
 
 //////////////////////////////////////////////////////////////////////////////
 // Usando modulos 2: Nuestros propios módulos
+
+//////////////////////////////////////////////////////////////////////////////
+// Versionamiento de paquetes y actualizaciones
+
+/*
+Los paquetes de npm siguen la notación de versión semántica, lo que significa que sus
+numeros de version siempre se expresan con estos tres numeros 1.18.1 el primer numero
+se llama la version principal, la segunda se llama versión menor y la tercera se llama
+version de parche.
+La version de parche solo esta destinada a corregir errores
+La version menor incluye algunas nuevas caracteristicas al paquete pero no incluye
+cambios importantes que rompan el código
+El simbolo ^ solamente nos indica que aceptamos versiones menores y corrección de
+errores
+El simbolo ~ solamente nos indica que acepta versiones parche es decir corrección de 
+errores
+El simbolo * acepta todas las versiones aunque incluyan cambios importantes
+npm outdated nos muestra una lista de paquetes no actualizados
+La forma de instalar una versión especifica del paquete es con este comando:
+npm install slugify@1.0.0
+Forma de eliminar paquetes
+npm uninstall express
+*/
