@@ -3,6 +3,13 @@
 const fs = require('fs');
 const http = require('http');
 const url = require('url');
+
+const slugify = require('slugify');
+/*
+Que es un slug? Es basicamente la ultima parte de una url que contiene una cadena unica que identifica el recurso
+que muestra el sitio web
+*/
+
 const replaceTemplate = require('./modules/replaceTemplate');
 
 //////////////////////////////////////////////////////////////////////////////
@@ -86,12 +93,25 @@ const tempProduct = fs.readFileSync(
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
 const dataObj = JSON.parse(data);
 
+const slugs = dataObj.map((el) =>
+    slugify(el.productName, {
+        lower: true,
+    })
+);
+console.log(slugs);
+
+console.log(
+    slugify('Fresh Avocados', {
+        lower: true,
+    })
+);
+
 const server = http.createServer((req, res) => {
     // console.log(req.url);
     // console.log(url.parse(req.url, true));
 
     // const pathName = req.url;
-    const {query, pathname: pathName} = url.parse(req.url, true)
+    const {query, pathname: pathName} = url.parse(req.url, true);
     // console.log(pathName);
     // Overview page
     if (pathName === '/' || pathName === '/overview') {
@@ -99,7 +119,9 @@ const server = http.createServer((req, res) => {
             'Content-type': 'text/html',
         });
 
-        const cardsHtml = dataObj.map((el) => replaceTemplate(tempCard, el)).join('');
+        const cardsHtml = dataObj
+            .map((el) => replaceTemplate(tempCard, el))
+            .join('');
         console.log(cardsHtml);
         const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHtml);
 
