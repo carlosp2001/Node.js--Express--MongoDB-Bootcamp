@@ -67,11 +67,32 @@ readFilePro(`${__dirname}/dog.txt`)
     })
     .then((res) => {
         console.log(res.body.message);
-       
-       return writeFilePro('dog-img.txt', res.body.message)
-    }).then((res) => {
+        return writeFilePro('dog-img.txt', res.body.message);
+    })
+    .then((res) => {
         console.log(res);
     })
     .catch((err) => {
         console.log(err);
     });
+
+// Usando async await
+
+const getDogPic = async () => {
+    try {
+        const data = await readFilePro(`${__dirname}/dog.txt`);
+        console.log(`Breed: ${data}`);
+
+        const res = await superagent.get(
+            `https://dog.ceo/api/breed/${data}/images/random`
+        );
+        console.log(res.body.message);
+
+        await writeFilePro('dog-img.txt', res.body.message);
+        console.log('Random dog image saved to file');
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+getDogPic();
