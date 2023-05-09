@@ -1,6 +1,7 @@
 // En el archivo app.js mantenemos nuestra configuración de express
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
@@ -14,6 +15,10 @@ const app = express();
 //   res.send('You can post to this endpoint...');
 // });
 
+// 1) MIDDLEWARES
+
+app.use(morgan('dev'));
+
 app.use(express.json()); // Este es el middleware, es una función que puede modificar los datos de la solicitud
 // entrante, se llama middleware porque se encuentra en medio de la solicitud y la respuesta
 
@@ -25,11 +30,13 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
     next();
-})
+});
 
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+
+// 2) ROUTE HANDLERS
 
 const getAllTours = (req, res) => {
     console.log(req.requestTime);
@@ -121,12 +128,15 @@ const deleteTour = (req, res) => {
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
+// 3) ROUTES
+
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 app.route('/api/v1/tours/:id')
     .get(getTour)
     .patch(updateTour)
     .delete(deleteTour);
 
+// 4) START SERVER
 const port = 3000;
 app.listen(port, () => {
     console.log(`App running on port ${port}...`);
