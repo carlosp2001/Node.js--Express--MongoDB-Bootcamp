@@ -4,9 +4,6 @@ const express = require('express');
 
 const app = express();
 
-app.use(express.json()); // Este es el middleware, es una función que puede modificar los datos de la solicitud
-// entrante, se llama middleware porque se encuentra en medio de la solicitud y la respuesta
-
 // app.get('/', (req, res) => {
 //   res
 //     .status(200)
@@ -17,13 +14,28 @@ app.use(express.json()); // Este es el middleware, es una función que puede mod
 //   res.send('You can post to this endpoint...');
 // });
 
+app.use(express.json()); // Este es el middleware, es una función que puede modificar los datos de la solicitud
+// entrante, se llama middleware porque se encuentra en medio de la solicitud y la respuesta
+
+app.use((req, res, next) => {
+    console.log('Hello from the middleware');
+    next();
+});
+
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    next();
+})
+
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 const getAllTours = (req, res) => {
+    console.log(req.requestTime);
     res.status(200).json({
         status: 'success',
+        requestedAt: req.requestTime,
         results: tours.length,
         data: {tours},
     });
