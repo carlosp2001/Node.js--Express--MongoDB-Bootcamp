@@ -33,7 +33,7 @@ exports.getAllTours = (req, res) => {
         status: 'success',
         requestedAt: req.requestTime,
         results: tours.length,
-        data: {tours},
+        data: { tours },
     });
 };
 
@@ -46,7 +46,7 @@ exports.getTour = (req, res) => {
     console.log(tour);
     res.status(200).json({
         status: 'success',
-        data: {tour},
+        data: { tour },
     });
 };
 
@@ -55,7 +55,8 @@ exports.createTour = (req, res) => {
     // contenidos acá
     // console.log(req.body);
     const newId = tours[tours.length - 1].id + 1;
-    const newTour = Object.assign({id: newId}, req.body);
+    // eslint-disable-next-line prefer-object-spread
+    const newTour = Object.assign({ id: newId }, req.body);
 
     tours.push(newTour);
     fs.writeFile(
