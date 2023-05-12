@@ -1,0 +1,8 @@
+Iniciar el servicio de mongo
+brew services start mongodb-community@6.0
+
+Parar el servicio de mongo
+brew services stop mongodb-community@6.0
+
+Conectarse a la shell
+mongosh
