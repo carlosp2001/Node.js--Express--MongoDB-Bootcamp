@@ -6,3 +6,27 @@ brew services stop mongodb-community@6.0
 
 Conectarse a la shell
 mongosh
+
+Hacer busquedas
+
+Buscar por un parametro
+db.tours.find({name: 'Forest Hiker'})
+
+Buscar por operadores
+Menos que 500
+db.tours.find({price: {$lt: 500}})
+Menos o igual que 500
+db.tours.find({price: {$lte: 500}})
+Mayor que 500
+db.tours.find({price: {$gt: 500}})
+Mayor o igual que 500
+db.tours.find({price: {$gte: 500}})
+
+Buscar por dos parametros
+db.tours.find({price: {$lt: 500}, rating: {$gte:4.8} })
+
+Buscar con condicion or
+db.tours.find({$or: [{price: {$lt:500}}, {rating:{$gte: 4.8}}]})
+
+Mostrar solamente ciertos campos
+db.tours.find({$or: [{price: {$lt:500}}, {rating:{$gte: 4.8}}]}, {name: 1})
