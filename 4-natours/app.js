@@ -19,9 +19,9 @@ const app = express();
 // 1) MIDDLEWARES
 
 app.use(morgan('dev'));
-
 app.use(express.json()); // Este es el middleware, es una función que puede modificar los datos de la solicitud
 // entrante, se llama middleware porque se encuentra en medio de la solicitud y la respuesta
+app.use(express.static(`${__dirname}/public`))
 
 app.use((req, res, next) => {
     console.log('Hello from the middleware');
