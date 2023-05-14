@@ -27,10 +27,10 @@ app.use(express.json()); // Este es el middleware, es una función que puede mod
 // entrante, se llama middleware porque se encuentra en medio de la solicitud y la respuesta
 app.use(express.static(`${__dirname}/public`));
 
-app.use((req, res, next) => {
-    console.log('Hello from the middleware');
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log('Hello from the middleware');
+//     next();
+// });
 
 app.use((req, res, next) => {
     req.requestTime = new Date().toISOString();
