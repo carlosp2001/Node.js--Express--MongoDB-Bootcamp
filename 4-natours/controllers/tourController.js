@@ -31,7 +31,7 @@ const APIFeatures = require('../utils/apiFeatures');
 
 exports.aliasTopTours = (req, res, next) => {
     req.query.limit = '5';
-    req.query.sort = '-ratingsAverage,price';
+    req.query.sort = 'price, -ratingsAverage';
     req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
     next();
 };
@@ -220,6 +220,58 @@ exports.deleteTour = async (req, res) => {
         res.status(204).json({
             status: 'success',
             data: null,
+        });
+    } catch (err) {
+        res.status(404).json({ status: 'fail', message: err });
+    }
+};
+
+exports.getToursStats = async (req, res) => {
+    try {
+        const stats = await Tour.aggregate([
+            // La tuberia de agregacion (aggregation pipeline) nos ayuda para
+            // calcular analisis de los datos que hay en la base de datos
+            // podemos calcular sum, promedios, min y max de datos.
+            // Tiene diferentes etapas, la primera es match que es el primer
+            // filtro que aplicamos,
+            // Luego la etapa de agrupacion que es donde definimos que datos
+            // queremos obtener, mediante un operador
+            // Y la ultima que es la etapa de orden, podemos usar 1 para ascendente
+            // y 0 para descendente
+            {
+                $match: { ratingsAverage: { $gte: 4.5 } },
+            },
+            {
+                $group: {
+                    // Id nos ayuda a dividir los datos, es decir a hacer
+                    // calculos dependiendo de algunos parámetros
+                    _id: { $toUpper: '$difficulty' },
+                    // _id: '$ratingsAverage',
+                    numTours: { $sum: 1 },
+                    numRatings: { $sum: '$ratingsQuantity' },
+                    avgRating: { $avg: '$ratingsAverage' },
+                    avgPrice: { $avg: '$price' },
+                    minPrice: { $min: '$price' },
+                    maxPrice: { $max: '$price' },
+                },
+            },
+            {
+                $sort: {
+                    avgPrice: 1,
+                },
+            },
+            // {
+            //     // Podemos repetir etapas
+            //     $match: { _id: { $ne: 'EASY' } },
+            // },
+        ]);
+        // console.log(stats[0].numRatings);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                stats,
+            },
         });
     } catch (err) {
         res.status(404).json({ status: 'fail', message: err });
