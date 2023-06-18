@@ -1,6 +1,7 @@
 // const fs = require('fs');
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 // const tours = JSON.parse(
@@ -119,12 +120,16 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     // console.log(err);
 });
 
-exports.getTour = catchAsync(async (req, res) => {
+exports.getTour = catchAsync(async (req, res, next) => {
     // Podemos crear parametro opcional agregando ?
     const tour = await Tour.findById(req.params.id);
     // Tour.findOne({_id: req.params.id})
     // console.log(req.params);
     console.log(tour);
+
+    if (!tour) {
+        return next(new AppError('No tour found with that ID', 404));
+    }
     res.status(200).json({
         status: 'success',
         data: { tour },
@@ -190,6 +195,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
         runValidators: true,
     }); // Con el parametro new nos devolvera el
     // documento ya actualizado
+
+    if (!tour) {
+        return next(new AppError('No tour found with that ID', 404));
+    }
+
     res.status(200).json({
         status: 'success',
         data: {
@@ -199,7 +209,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
-    await Tour.findByIdAndDelete(req.params.id);
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+
+    if (!tour) {
+        return next(new AppError('No tour found with that ID', 404));
+    }
 
     res.status(204).json({
         status: 'success',
