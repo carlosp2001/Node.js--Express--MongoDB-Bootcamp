@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
 // Este hook sucede entre conseguir los datos y guardarlos en la base de datos
 userSchema.pre('save', async function (next) {
     // Only runs this function if password was actually modified
-    if (!this.isModified) return next();
+    if (!this.isModified('password')) return next();
 
     // Hash the password with cost of 12
     this.password = await bcrypt.hash(this.password, 12);
@@ -81,7 +81,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 };
 
 userSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetToken = crypto.randomBytes(36).toString('hex');
     this.passwordResetToken = crypto
         .createHash('sha256')
         .update(resetToken)
