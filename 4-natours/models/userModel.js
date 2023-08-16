@@ -58,6 +58,13 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password') || this.IsNew) return next();
+
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
 // Un metodo instante estará disponible en todos los documentos de una cierta coleccion
 userSchema.methods.correctPassword = async function (
     candidatePassword,
