@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema({
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false,
+    },
 });
 
 // Este hook sucede entre conseguir los datos y guardarlos en la base de datos
@@ -62,6 +67,12 @@ userSchema.pre('save', function (next) {
     if (!this.isModified('password') || this.IsNew) return next();
 
     this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
+userSchema.pre(/^find/, function (next) {
+    // this points to the current query
+    this.find({ active: { $ne: false } });
     next();
 });
 
