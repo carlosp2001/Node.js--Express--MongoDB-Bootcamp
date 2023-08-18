@@ -3,6 +3,8 @@ const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -46,6 +48,12 @@ app.use(
         limit: '10kb',
     })
 ); // Este es el middleware, es una función que puede modificar los datos de la solicitud entrante, se llama middleware porque se encuentra en medio de la solicitud y la respuesta
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize()); // Elimina todo tipo de signo que este relacionado con operadores de mongoose queries
+
+// Data sanitization against XSS
+app.use(xss());
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
