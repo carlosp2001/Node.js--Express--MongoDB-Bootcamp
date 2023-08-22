@@ -163,6 +163,16 @@ tourSchema.post(/^find/, (docs, next) => {
     next();
 });
 
+// Middleware para poblar el query
+tourSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'guides',
+        select: '-__v -passwordChangedAt',
+    }); // Populate funciona para obtener la
+    // información del elemento hijo (referencia)
+    next();
+});
+
 // AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', (next) => {
     this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
