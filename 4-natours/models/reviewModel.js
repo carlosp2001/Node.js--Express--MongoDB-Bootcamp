@@ -32,11 +32,22 @@ const reviewSchema = new mongoose.Schema(
     },
     {
         toJSON: { virtuals: true }, // Nos ayuda para cuando halla una propiedad virtual, basicamente un campo
-        // que no esté almacenado en la base de datos, sino que se calcule usando algun otro valor, asi que queremos  
+        // que no esté almacenado en la base de datos, sino que se calcule usando algun otro valor, asi que queremos
         // que esto tambien se muestre cuando haya un output
         toObject: { virtuals: true },
     }
 );
+
+reviewSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'tour',
+        select: 'name',
+    }).populate({
+        path: 'user',
+        select: 'name photo',
+    });
+    next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
