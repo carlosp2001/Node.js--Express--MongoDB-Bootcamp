@@ -122,8 +122,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 
 exports.getTour = catchAsync(async (req, res, next) => {
     // Podemos crear parametro opcional agregando ?
-    const tour = await Tour.findById(req.params.id);
-    // .populate('reviews');
+    const tour = await Tour.findById(req.params.id).populate('reviews');
     // Tour.findOne({_id: req.params.id})
     // console.log(req.params);
     console.log(tour);
