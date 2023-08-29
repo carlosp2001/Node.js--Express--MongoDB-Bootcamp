@@ -20,7 +20,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
         status: 'success',
         // requestedAt: req.requestTime,
         results: tours.length,
-        data: { tours },
+        data: { tours }
     });
 });
 
@@ -47,45 +47,46 @@ exports.updateMe = catchAsync(async (req, res, next) => {
         filteredBody,
         {
             new: true,
-            runValidators: true,
+            runValidators: true
         }
     );
 
     res.status(200).json({
         status: 'success',
         data: {
-            user: updatedUser,
-        },
+            user: updatedUser
+        }
     });
 });
 
 exports.getUser = (req, res, next) => {
     res.status(500).json({
         status: 'error',
-        message: 'This route is not yet defined',
+        message: 'This route is not yet defined'
     });
 };
 
 exports.createUser = (req, res, next) => {
     res.status(500).json({
         status: 'error',
-        message: 'This route is not yet defined',
+        message: 'This route is not yet defined'
     });
 };
 
-exports.updateUser = (req, res, next) => {
-    res.status(500).json({
-        status: 'error',
-        message: 'This route is not yet defined',
-    });
-};
+// With no factory
+// exports.updateUser = (req, res, next) => {
+//     res.status(500).json({
+//         status: 'error',
+//         message: 'This route is not yet defined'
+//     });
+// };
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(req.user.id, { active: false });
 
     res.status(204).json({
         status: 'success',
-        data: null,
+        data: null
     });
 });
 
@@ -98,4 +99,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 // };
 
 
-exports.deleteUser = factory.deleteOne(User)
+// Do NOT update passwords with this
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);

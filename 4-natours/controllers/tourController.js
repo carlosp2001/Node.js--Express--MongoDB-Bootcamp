@@ -116,7 +116,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
         status: 'success',
         // requestedAt: req.requestTime,
         results: tours.length,
-        data: { tours },
+        data: { tours }
     });
     // console.log(err);
 });
@@ -133,7 +133,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
     }
     res.status(200).json({
         status: 'success',
-        data: { tour },
+        data: { tour }
     });
 
     // const tour = tours.find((el) => el.id === id);
@@ -145,71 +145,75 @@ exports.getTour = catchAsync(async (req, res, next) => {
     // });
 });
 
-exports.createTour = catchAsync(async (req, res, next) => {
-    // Req contiene toda la información sobre la solicitud que se realizó, los datos que se envian estan
-    // contenidos acá
-    // console.log(req.body);
-    // const newId = tours[tours.length - 1].id + 1;
-    // // eslint-disable-next-line prefer-object-spread
-    // const newTour = Object.assign({ id: newId }, req.body);
+// With no factory functions //
+// exports.createTour = catchAsync(async (req, res, next) => {
+//     // Req contiene toda la información sobre la solicitud que se realizó, los datos que se envian estan
+//     // contenidos acá
+//     // console.log(req.body);
+//     // const newId = tours[tours.length - 1].id + 1;
+//     // // eslint-disable-next-line prefer-object-spread
+//     // const newTour = Object.assign({ id: newId }, req.body);
+//
+//     // tours.push(newTour);
+//     // fs.writeFile(
+//     //     `${__dirname}/dev-data/data/tours-simple.json`,
+//     //     JSON.stringify(tours),
+//     //     (err) => {
+//     //         res.status(201).json({
+//     //             status: 'success',
+//     //             data: {
+//     //                 tour: newTour,
+//     //             },
+//     //         }); // El codigo 201 significado creado
+//     //     }
+//     // );
+//
+//     // Forma de hacerlo directamente desde el documento
+//     // const newTour = new Tour({});
+//     // newTour.save();
+//
+//     // Forma de hacerlo desde el objeto
+//     console.log(req.body);
+//     const newTour = await Tour.create(req.body);
+//
+//     res.status(201).json({
+//         status: 'success',
+//         data: {
+//             tour: newTour
+//         }
+//     }); // El codigo 201 significado creado
+//
+//     // try {
+//
+//     // } catch (err) {
+//     //     // console.log(err);
+//     //     res.status(400).json({ status: 'fail', message: err });
+//     // }
+// });
 
-    // tours.push(newTour);
-    // fs.writeFile(
-    //     `${__dirname}/dev-data/data/tours-simple.json`,
-    //     JSON.stringify(tours),
-    //     (err) => {
-    //         res.status(201).json({
-    //             status: 'success',
-    //             data: {
-    //                 tour: newTour,
-    //             },
-    //         }); // El codigo 201 significado creado
-    //     }
-    // );
+// With no handler factory function
+// exports.updateTour = catchAsync(async (req, res, next) => {
+//     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//         new: true,
+//         runValidators: true,
+//     }); // Con el parametro new nos devolvera el
+//     // documento ya actualizado
+//
+//     if (!tour) {
+//         return next(new AppError('No tour found with that ID', 404));
+//     }
+//
+//     res.status(200).json({
+//         status: 'success',
+//         data: {
+//             tour,
+//         },
+//     });
+// });
 
-    // Forma de hacerlo directamente desde el documento
-    // const newTour = new Tour({});
-    // newTour.save();
-
-    // Forma de hacerlo desde el objeto
-    console.log(req.body);
-    const newTour = await Tour.create(req.body);
-
-    res.status(201).json({
-        status: 'success',
-        data: {
-            tour: newTour,
-        },
-    }); // El codigo 201 significado creado
-
-    // try {
-
-    // } catch (err) {
-    //     // console.log(err);
-    //     res.status(400).json({ status: 'fail', message: err });
-    // }
-});
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
-    }); // Con el parametro new nos devolvera el
-    // documento ya actualizado
-
-    if (!tour) {
-        return next(new AppError('No tour found with that ID', 404));
-    }
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            tour,
-        },
-    });
-});
-
-exports.deleteTour = factory.deleteOne(Tour)
+exports.createTour = factory.createOne(Tour);
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
 
 // Sin factory handler
 // exports.deleteTour = catchAsync(async (req, res, next) => {
@@ -237,7 +241,7 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
         // Y la ultima que es la etapa de orden, podemos usar 1 para ascendente
         // y 0 para descendente
         {
-            $match: { ratingsAverage: { $gte: 4.5 } },
+            $match: { ratingsAverage: { $gte: 4.5 } }
         },
         {
             $group: {
@@ -250,14 +254,14 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
                 avgRating: { $avg: '$ratingsAverage' },
                 avgPrice: { $avg: '$price' },
                 minPrice: { $min: '$price' },
-                maxPrice: { $max: '$price' },
-            },
+                maxPrice: { $max: '$price' }
+            }
         },
         {
             $sort: {
-                avgPrice: 1,
-            },
-        },
+                avgPrice: 1
+            }
+        }
         // {
         //     // Podemos repetir etapas
         //     $match: { _id: { $ne: 'EASY' } },
@@ -268,8 +272,8 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         data: {
-            stats,
-        },
+            stats
+        }
     });
 });
 
@@ -279,47 +283,47 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
         {
             // Unwind hace deconstrucción de un array crea un documento
             // para cada registro
-            $unwind: '$startDates',
+            $unwind: '$startDates'
         },
         {
             $match: {
                 startDates: {
                     $gte: new Date(`${year}-01-01`),
-                    $lte: new Date(`${year}-12-31`),
-                },
-            },
+                    $lte: new Date(`${year}-12-31`)
+                }
+            }
         },
         {
             $group: {
                 _id: { $month: '$startDates' },
                 numTourStarts: { $sum: 1 },
-                tours: { $push: '$name' },
-            },
+                tours: { $push: '$name' }
+            }
         },
         {
             // Agregamos un campo
-            $addFields: { month: '$_id' },
+            $addFields: { month: '$_id' }
         },
         {
             // Le damos un valor predeterminado a un campo
             $project: {
-                _id: 0,
-            },
+                _id: 0
+            }
         },
         {
             $sort: {
-                numTourStarts: -1,
-            },
+                numTourStarts: -1
+            }
         },
         {
-            $limit: 12,
-        },
+            $limit: 12
+        }
     ]);
 
     res.status(200).json({
         status: 'success',
         data: {
-            plan,
-        },
+            plan
+        }
     });
 });
