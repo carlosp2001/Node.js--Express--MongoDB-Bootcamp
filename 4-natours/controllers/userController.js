@@ -11,6 +11,13 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
 };
 
+exports.getMe = (req, res, next) => {
+    // Se declara esta variable asi para que al momento de llamar a getOne
+    // se ocupe la misma llamada para obtener este usuario
+    req.params.id = req.user.id;
+    next();
+};
+
 // exports.getAllUsers = catchAsync(async (req, res, next) => {
 //     const tours = await User.find();
 //     // query.sort().select().skip().limit()
