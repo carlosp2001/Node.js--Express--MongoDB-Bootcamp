@@ -39,112 +39,117 @@ exports.aliasTopTours = (req, res, next) => {
     next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-    // console.log(req.query);
-    // BUILD QUERY
-    // 1A) Filtering
-    // const queryObj = { ...req.query };
-    // const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    // excludedFields.forEach((el) => delete queryObj[el]);
+// exports.getAllTours = catchAsync(async (req, res, next) => {
+//     // console.log(req.query);
+//     // BUILD QUERY
+//     // 1A) Filtering
+//     // const queryObj = { ...req.query };
+//     // const excludedFields = ['page', 'sort', 'limit', 'fields'];
+//     // excludedFields.forEach((el) => delete queryObj[el]);
+//
+//     // // 1B) Advanced filtering
+//     // let queryStr = JSON.stringify(queryObj);
+//     // queryStr = queryStr.replace(
+//     //     /\b(gte|gt|lte|lt)\b/g,
+//     //     (match) => `$${match}`
+//     // ); // g significa que reemplazará multiples veces en la cade de texto
+//     // console.log(JSON.parse(queryStr));
+//
+//     // let query = Tour.find(JSON.parse(queryStr));
+//     // {difficulty: 'easy', duration: { $gte: 5}}
+//     // Queremos cambiar gte, gt, lte, lt
+//
+//     // const query = await Tour.find({
+//     //     duration: 5,
+//     //     difficulty: 'easy',
+//     // });
+//
+//     // const query = await Tour.find()
+//     //     .where('duration')
+//     //     .equals(5)
+//     //     .where('difficulty')
+//     //     .equals('easy');
+//
+//     // 2) Sorting
+//     // if (req.query.sort) {
+//     //     const sortBy = req.query.sort.split(',').join(' ');
+//     //     console.log(sortBy);
+//     //     query = query.sort(sortBy);
+//     //     // sort('price ratingsAverage')
+//     // } else {
+//     //     query = query.sort('-createdAt -price');
+//     // }
+//
+//     // 3) Field limiting
+//     // if (req.query.fields) {
+//     //     const fields = req.query.fields.split(',').join(' ');
+//     //     // query = query.select('name space duration')
+//     //     query = query.select(fields);
+//     // } else {
+//     //     query = query.select('-__v');
+//     // }
+//
+//     // 4) Pagination
+//     // const page = req.query.page * 1 || 1;
+//     // const limit = req.query.limit * 1 || 100;
+//     // const skip = (page - 1) * limit;
+//     // console.log(skip);
+//     // // page=2&limit=10, 1-10, page 1, 11-20, page 2, 21-30, page 3
+//     // query = query.skip(skip).limit(limit);
+//
+//     // if (req.query.page) {
+//     //     const numTours = await Tour.countDocuments();
+//     //     if (skip >= numTours) throw new Error('This page does not exist');
+//     // }
+//
+//     // EXECUTE QUERY
+//     const features = new APIFeatures(Tour.find(), req.query)
+//         .filter()
+//         .sort()
+//         .limitFields()
+//         .paginate(0);
+//     const tours = await features.query;
+//     // query.sort().select().skip().limit()
+//
+//     // SEND RESPONSE
+//     res.status(200).json({
+//         status: 'success',
+//         // requestedAt: req.requestTime,
+//         results: tours.length,
+//         data: { tours }
+//     });
+//     // console.log(err);
+// });
 
-    // // 1B) Advanced filtering
-    // let queryStr = JSON.stringify(queryObj);
-    // queryStr = queryStr.replace(
-    //     /\b(gte|gt|lte|lt)\b/g,
-    //     (match) => `$${match}`
-    // ); // g significa que reemplazará multiples veces en la cade de texto
-    // console.log(JSON.parse(queryStr));
+// exports.getTour = catchAsync(async (req, res, next) => {
+//     // Podemos crear parametro opcional agregando ?
+//     const tour = await Tour.findById(req.params.id).populate('reviews');
+//     // Tour.findOne({_id: req.params.id})
+//     // console.log(req.params);
+//     console.log(tour);
+//
+//     if (!tour) {
+//         return next(new AppError('No tour found with that ID', 404));
+//     }
+//     res.status(200).json({
+//         status: 'success',
+//         data: { tour }
+//     });
+//
+//     // const tour = tours.find((el) => el.id === id);
+//
+//     // console.log(tour);
+//     // res.status(200).json({
+//     //     status: 'success',
+//     //     data: { tour },
+//     // });
+// });
 
-    // let query = Tour.find(JSON.parse(queryStr));
-    // {difficulty: 'easy', duration: { $gte: 5}}
-    // Queremos cambiar gte, gt, lte, lt
-
-    // const query = await Tour.find({
-    //     duration: 5,
-    //     difficulty: 'easy',
-    // });
-
-    // const query = await Tour.find()
-    //     .where('duration')
-    //     .equals(5)
-    //     .where('difficulty')
-    //     .equals('easy');
-
-    // 2) Sorting
-    // if (req.query.sort) {
-    //     const sortBy = req.query.sort.split(',').join(' ');
-    //     console.log(sortBy);
-    //     query = query.sort(sortBy);
-    //     // sort('price ratingsAverage')
-    // } else {
-    //     query = query.sort('-createdAt -price');
-    // }
-
-    // 3) Field limiting
-    // if (req.query.fields) {
-    //     const fields = req.query.fields.split(',').join(' ');
-    //     // query = query.select('name space duration')
-    //     query = query.select(fields);
-    // } else {
-    //     query = query.select('-__v');
-    // }
-
-    // 4) Pagination
-    // const page = req.query.page * 1 || 1;
-    // const limit = req.query.limit * 1 || 100;
-    // const skip = (page - 1) * limit;
-    // console.log(skip);
-    // // page=2&limit=10, 1-10, page 1, 11-20, page 2, 21-30, page 3
-    // query = query.skip(skip).limit(limit);
-
-    // if (req.query.page) {
-    //     const numTours = await Tour.countDocuments();
-    //     if (skip >= numTours) throw new Error('This page does not exist');
-    // }
-
-    // EXECUTE QUERY
-    const features = new APIFeatures(Tour.find(), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate(0);
-    const tours = await features.query;
-    // query.sort().select().skip().limit()
-
-    // SEND RESPONSE
-    res.status(200).json({
-        status: 'success',
-        // requestedAt: req.requestTime,
-        results: tours.length,
-        data: { tours }
-    });
-    // console.log(err);
-});
-
-exports.getTour = catchAsync(async (req, res, next) => {
-    // Podemos crear parametro opcional agregando ?
-    const tour = await Tour.findById(req.params.id).populate('reviews');
-    // Tour.findOne({_id: req.params.id})
-    // console.log(req.params);
-    console.log(tour);
-
-    if (!tour) {
-        return next(new AppError('No tour found with that ID', 404));
-    }
-    res.status(200).json({
-        status: 'success',
-        data: { tour }
-    });
-
-    // const tour = tours.find((el) => el.id === id);
-
-    // console.log(tour);
-    // res.status(200).json({
-    //     status: 'success',
-    //     data: { tour },
-    // });
-});
-
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+exports.getAllTours = factory.getAll(Tour);
+exports.createTour = factory.createOne(Tour);
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
 // With no factory functions //
 // exports.createTour = catchAsync(async (req, res, next) => {
 //     // Req contiene toda la información sobre la solicitud que se realizó, los datos que se envian estan
@@ -210,10 +215,6 @@ exports.getTour = catchAsync(async (req, res, next) => {
 //         },
 //     });
 // });
-
-exports.createTour = factory.createOne(Tour);
-exports.updateTour = factory.updateOne(Tour);
-exports.deleteTour = factory.deleteOne(Tour);
 
 // Sin factory handler
 // exports.deleteTour = catchAsync(async (req, res, next) => {

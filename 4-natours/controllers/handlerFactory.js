@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Tour = require('../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
 
 exports.deleteOne = Model => catchAsync(async (req, res, next) => {
     const document = await Model.findByIdAndDelete(req.params.id);
@@ -44,4 +45,51 @@ exports.createOne = Model => catchAsync(async (req, res, next) => {
             data: doc
         }
     }); // El codigo 201 significado creado
+});
+
+exports.getOne = (Model, popOptions) => catchAsync(async (req, res, next) => {
+    let query = Model.findById(req.params.id);
+    if (popOptions) query = query.populate(popOptions);
+    const doc = await query;
+
+    console.log(doc);
+
+    if (!doc) {
+        return next(new AppError('No document found with that ID', 404));
+    }
+    res.status(200).json({
+        status: 'success',
+        data: { data: doc }
+    });
+
+    // const tour = tours.find((el) => el.id === id);
+
+    // console.log(tour);
+    // res.status(200).json({
+    //     status: 'success',
+    //     data: { tour },
+    // });
+});
+
+// EXECUTE QUERY
+exports.getAll = Model => catchAsync(async (req, res, next) => {
+    // To allow for nested GET reviews on tour
+    let filter = {};
+    if (req.params.tourId) filter = {tour: req.params.tourId}
+    const features = new APIFeatures(Model.find(), req.query)
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate(0);
+    const doc = await features.query;
+// query.sort().select().skip().limit()
+
+// SEND RESPONSE
+    res.status(200).json({
+        status: 'success',
+        // requestedAt: req.requestTime,
+        results: doc.length,
+        data: { doc }
+    });
+// console.log(err);
 });
