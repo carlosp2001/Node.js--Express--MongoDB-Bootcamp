@@ -231,6 +231,7 @@ exports.deleteTour = factory.deleteOne(Tour);
 // });
 
 exports.getToursStats = catchAsync(async (req, res, next) => {
+    console.log('ehlsd');
     const stats = await Tour.aggregate([
         // La tuberia de agregacion (aggregation pipeline) nos ayuda para
         // calcular analisis de los datos que hay en la base de datos
@@ -242,7 +243,7 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
         // Y la ultima que es la etapa de orden, podemos usar 1 para ascendente
         // y 0 para descendente
         {
-            $match: { ratingsAverage: { $gte: 4.5 } }
+            $match: { ratingsAverage: { $gte: 4.5 } },
         },
         {
             $group: {
@@ -255,14 +256,14 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
                 avgRating: { $avg: '$ratingsAverage' },
                 avgPrice: { $avg: '$price' },
                 minPrice: { $min: '$price' },
-                maxPrice: { $max: '$price' }
-            }
+                maxPrice: { $max: '$price' },
+            },
         },
         {
             $sort: {
-                avgPrice: 1
-            }
-        }
+                avgPrice: 1,
+            },
+        },
         // {
         //     // Podemos repetir etapas
         //     $match: { _id: { $ne: 'EASY' } },
@@ -273,8 +274,8 @@ exports.getToursStats = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         data: {
-            stats
-        }
+            stats,
+        },
     });
 });
 
@@ -284,47 +285,47 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
         {
             // Unwind hace deconstrucción de un array crea un documento
             // para cada registro
-            $unwind: '$startDates'
+            $unwind: '$startDates',
         },
         {
             $match: {
                 startDates: {
                     $gte: new Date(`${year}-01-01`),
-                    $lte: new Date(`${year}-12-31`)
-                }
-            }
+                    $lte: new Date(`${year}-12-31`),
+                },
+            },
         },
         {
             $group: {
                 _id: { $month: '$startDates' },
                 numTourStarts: { $sum: 1 },
-                tours: { $push: '$name' }
-            }
+                tours: { $push: '$name' },
+            },
         },
         {
             // Agregamos un campo
-            $addFields: { month: '$_id' }
+            $addFields: { month: '$_id' },
         },
         {
             // Le damos un valor predeterminado a un campo
             $project: {
-                _id: 0
-            }
+                _id: 0,
+            },
         },
         {
             $sort: {
-                numTourStarts: -1
-            }
+                numTourStarts: -1,
+            },
         },
         {
-            $limit: 12
-        }
+            $limit: 12,
+        },
     ]);
 
     res.status(200).json({
         status: 'success',
         data: {
-            plan
-        }
+            plan,
+        },
     });
 });
