@@ -121,6 +121,12 @@ const tourSchema = new mongoose.Schema(
     }
 );
 
+// Creación de indice normal
+// tourSchema.index({ price: 1 });
+
+// Creación de indice compuesto
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+
 // Las propiedades virtuales son todos aquellos campos que no queremos conservar en nuestra base de datos
 tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
