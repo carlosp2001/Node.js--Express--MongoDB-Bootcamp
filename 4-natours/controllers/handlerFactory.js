@@ -93,6 +93,7 @@ exports.getAll = (Model) =>
 
         // Mostrar la informacion del query pqrq saber cuantos documentos estan siendo examinados
         // const doc = await features.query.explain();
+        const doc = await features.query;
 
         // query.sort().select().skip().limit()
 
