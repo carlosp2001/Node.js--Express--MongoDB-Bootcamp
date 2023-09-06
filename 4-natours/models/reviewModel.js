@@ -65,22 +65,43 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
         },
     ]);
     console.log(stats);
-
-    await Tour.findByIdAndUpdate(tourId, {
-        ratingsQuantity: stats[0].nRating,
-        ratingsAverage: stats[0].avgRating
-    })
+    if (stats.length > 0) {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: stats[0].nRating,
+            ratingsAverage: stats[0].avgRating,
+        });
+    } else {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: 0,
+            ratingsAverage: 4.5,
+        });
+    }
 };
 
 // Se utiliza el post hook middleware porque una vez guardada la ultima review queremos encontrar
 //
-reviewSchema.post('save', function(next) {
+reviewSchema.post('save', function () {
     // this points to current review
     // Review aun no esta declarado entonces para poder llamar a calcAverage necesitamos apuntar
     // al constructor que seria el modelo Review
     this.constructor.calcAverageRatings(this.tour);
-    this.next();
-})
+    // En el middleware post no se utiliza next, ya que es el ultimo middleware
+    // this.next();
+});
+
+// Necesitamos crear un hook o middleware para las acciones como:
+// findIdAndUpdate
+// findByIdAndDelete
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+    this.r = await this.findOne();
+    console.log(this.r);
+    next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+    // await this.findOne(); does NOT work here, query has already executed
+    this.r.constructor.calcAverageRatings(this.r.tour);
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 
