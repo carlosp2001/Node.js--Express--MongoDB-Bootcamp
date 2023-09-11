@@ -8,7 +8,7 @@
             {
                 "singleQuote": false,
                 "parser": "flow",
-                "printWidth": 100
+                "printWidth": 80
             }
         ],
         "spaced-comment": "off",
