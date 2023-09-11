@@ -1,9 +1,9 @@
 // const fs = require('fs');
-const Tour = require("../models/tourModel");
-const APIFeatures = require("../utils/apiFeatures");
-const AppError = require("../utils/appError");
-const catchAsync = require("../utils/catchAsync");
-const factory = require("./handlerFactory");
+const Tour = require('../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
+const catchAsync = require('../utils/catchAsync');
+const factory = require('./handlerFactory');
 
 // const tours = JSON.parse(
 //     fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
@@ -33,10 +33,10 @@ const factory = require("./handlerFactory");
 // };
 
 exports.aliasTopTours = (req, res, next) => {
-  req.query.limit = "5";
-  req.query.sort = "price, -ratingsAverage";
-  req.query.fields = "name,price,ratingsAverage,summary,difficulty";
-  next();
+    req.query.limit = '5';
+    req.query.sort = 'price, -ratingsAverage';
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+    next();
 };
 
 // exports.getAllTours = catchAsync(async (req, res, next) => {
@@ -145,7 +145,7 @@ exports.aliasTopTours = (req, res, next) => {
 //     // });
 // });
 
-exports.getTour = factory.getOne(Tour, { path: "reviews" });
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
 exports.getAllTours = factory.getAll(Tour);
 exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
@@ -231,128 +231,167 @@ exports.deleteTour = factory.deleteOne(Tour);
 // });
 
 exports.getToursStats = catchAsync(async (req, res, next) => {
-  console.log("ehlsd");
-  const stats = await Tour.aggregate([
-    // La tuberia de agregacion (aggregation pipeline) nos ayuda para
-    // calcular analisis de los datos que hay en la base de datos
-    // podemos calcular sum, promedios, min y max de datos.
-    // Tiene diferentes etapas, la primera es match que es el primer
-    // filtro que aplicamos,
-    // Luego la etapa de agrupacion que es donde definimos que datos
-    // queremos obtener, mediante un operador
-    // Y la ultima que es la etapa de orden, podemos usar 1 para ascendente
-    // y 0 para descendente
-    {
-      $match: { ratingsAverage: { $gte: 4.5 } }
-    },
-    {
-      $group: {
-        // Id nos ayuda a dividir los datos, es decir a hacer
-        // calculos dependiendo de algunos parámetros
-        _id: { $toUpper: "$difficulty" },
-        // _id: '$ratingsAverage',
-        numTours: { $sum: 1 },
-        numRatings: { $sum: "$ratingsQuantity" },
-        avgRating: { $avg: "$ratingsAverage" },
-        avgPrice: { $avg: "$price" },
-        minPrice: { $min: "$price" },
-        maxPrice: { $max: "$price" }
-      }
-    },
-    {
-      $sort: {
-        avgPrice: 1
-      }
-    }
-    // {
-    //     // Podemos repetir etapas
-    //     $match: { _id: { $ne: 'EASY' } },
-    // },
-  ]);
-  // console.log(stats[0].numRatings);
+    console.log('ehlsd');
+    const stats = await Tour.aggregate([
+        // La tuberia de agregacion (aggregation pipeline) nos ayuda para
+        // calcular analisis de los datos que hay en la base de datos
+        // podemos calcular sum, promedios, min y max de datos.
+        // Tiene diferentes etapas, la primera es match que es el primer
+        // filtro que aplicamos,
+        // Luego la etapa de agrupacion que es donde definimos que datos
+        // queremos obtener, mediante un operador
+        // Y la ultima que es la etapa de orden, podemos usar 1 para ascendente
+        // y 0 para descendente
+        {
+            $match: { ratingsAverage: { $gte: 4.5 } },
+        },
+        {
+            $group: {
+                // Id nos ayuda a dividir los datos, es decir a hacer
+                // calculos dependiendo de algunos parámetros
+                _id: { $toUpper: '$difficulty' },
+                // _id: '$ratingsAverage',
+                numTours: { $sum: 1 },
+                numRatings: { $sum: '$ratingsQuantity' },
+                avgRating: { $avg: '$ratingsAverage' },
+                avgPrice: { $avg: '$price' },
+                minPrice: { $min: '$price' },
+                maxPrice: { $max: '$price' },
+            },
+        },
+        {
+            $sort: {
+                avgPrice: 1,
+            },
+        },
+        // {
+        //     // Podemos repetir etapas
+        //     $match: { _id: { $ne: 'EASY' } },
+        // },
+    ]);
+    // console.log(stats[0].numRatings);
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      stats
-    }
-  });
+    res.status(200).json({
+        status: 'success',
+        data: {
+            stats,
+        },
+    });
 });
 
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
-  const year = req.params.year * 1; // 2021
-  const plan = await Tour.aggregate([
-    {
-      // Unwind hace deconstrucción de un array crea un documento
-      // para cada registro
-      $unwind: "$startDates"
-    },
-    {
-      $match: {
-        startDates: {
-          $gte: new Date(`${year}-01-01`),
-          $lte: new Date(`${year}-12-31`)
-        }
-      }
-    },
-    {
-      $group: {
-        _id: { $month: "$startDates" },
-        numTourStarts: { $sum: 1 },
-        tours: { $push: "$name" }
-      }
-    },
-    {
-      // Agregamos un campo
-      $addFields: { month: "$_id" }
-    },
-    {
-      // Le damos un valor predeterminado a un campo
-      $project: {
-        _id: 0
-      }
-    },
-    {
-      $sort: {
-        numTourStarts: -1
-      }
-    },
-    {
-      $limit: 12
-    }
-  ]);
+    const year = req.params.year * 1; // 2021
+    const plan = await Tour.aggregate([
+        {
+            // Unwind hace deconstrucción de un array crea un documento
+            // para cada registro
+            $unwind: '$startDates',
+        },
+        {
+            $match: {
+                startDates: {
+                    $gte: new Date(`${year}-01-01`),
+                    $lte: new Date(`${year}-12-31`),
+                },
+            },
+        },
+        {
+            $group: {
+                _id: { $month: '$startDates' },
+                numTourStarts: { $sum: 1 },
+                tours: { $push: '$name' },
+            },
+        },
+        {
+            // Agregamos un campo
+            $addFields: { month: '$_id' },
+        },
+        {
+            // Le damos un valor predeterminado a un campo
+            $project: {
+                _id: 0,
+            },
+        },
+        {
+            $sort: {
+                numTourStarts: -1,
+            },
+        },
+        {
+            $limit: 12,
+        },
+    ]);
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      plan
-    }
-  });
+    res.status(200).json({
+        status: 'success',
+        data: {
+            plan,
+        },
+    });
 });
 
 // /tours-within/:distance/center/:latln/unit/:unit"
 // /tours-distance?distance=233&center=-40&45&unit=mi
 // /tours-distance/233/center/-40,45/unit/mi
 exports.getToursWithin = catchAsync(async (req, res, next) => {
-  console.log(req.params);
-  const { distance, latlng, unit } = req.params;
-  const [lat, lng] = latlng.split(",");
+    console.log(req.params);
+    const { distance, latlng, unit } = req.params;
+    const [lat, lng] = latlng.split(',');
 
-  const radius = unit === "mi" ? distance / 3963.2 : distance / 6378.1;
+    const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
 
-  if (!lat || !lng) {
-    next(new AppError("Please provide in the format lat, lng.", 400));
-  }
-
-  console.log(distance, lat, lng);
-
-  const tours = await Tour.find({ startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } } });
-
-  res.status(200).json({
-    status: "success",
-    results: tours.length,
-    data: {
-      data: tours
+    if (!lat || !lng) {
+        next(new AppError('Please provide in the format lat, lng.', 400));
     }
-  });
+
+    console.log(distance, lat, lng);
+
+    const tours = await Tour.find({
+        startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+    });
+
+    res.status(200).json({
+        status: 'success',
+        results: tours.length,
+        data: {
+            data: tours,
+        },
+    });
+});
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+    const { latlng, unit } = req.params;
+    const [lat, lng] = latlng.split(',');
+
+    const multiplier = unit === 'mi' ? 0.000621371 : 0.001;
+
+    if (!lat || !lng) {
+        next(new AppError('Please provide in the format lat, lng.', 400));
+    }
+
+    const distances = await Tour.aggregate([
+        {
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates: [lng * 1, lat * 1],
+                },
+                distanceField: 'distance',
+                distanceMultiplier: multiplier,
+            },
+        },
+        {
+            $project: {
+                distance: 1,
+                name: 1,
+            },
+        },
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: distances,
+        },
+    });
 });

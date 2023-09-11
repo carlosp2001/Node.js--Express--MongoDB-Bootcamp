@@ -6,6 +6,7 @@
         "prettier/prettier": [
             "error",
             {
+                "tabWidth": 2,
                 "singleQuote": false,
                 "parser": "flow",
                 "printWidth": 80
